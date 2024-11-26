@@ -1,0 +1,240 @@
+<html></html>
+<head>
+<title>Vue.js Pet Depot</title>
+<script src="products.js"></script>
+<script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<link rel="=manifest" href="petstore.webmanifest">
+<style>
+    .product {
+        border: solid 1px grey;
+        padding: 20px;
+        margin: 20px;
+        text-align: center;
+
+    }
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+<h1 v-text="sitename"></h1>
+<button v-on:click='showCheckout'>
+    {{ cartItemCount }}
+    <span class="fas fa-cart-plus"></span>Checkout
+</button>
+</header>
+<main>
+    <div v-if='showProduct'>
+        <div class='product' v-for="product in sortedproducts">
+            <h2 v-text="product.title"></h2>
+    <figure>
+    <!-- bind 'src' attr to 'product.image' in 'data' -->
+    <img v-bind:src="product.image" width="100">
+    </figure>
+    <h2 v-text="product.title"></h2>
+    <p v-text="product.description"></p>
+    <!-- The double curly brackets is used instead of 'v-text' -->
+    <p>Price: {{product.price}}</p>
+    <p>AvailableStock: {{product.availableInventory}} </p>
+    
+        <button v-on:click="addToCart(product)" v-if='canAddToCart(product)'>AddToCart</button>
+        
+       
+            <!-- <span v-if="product.availableInventory - cartItemCount < 5">
+            only {{product.availableInventory - cartItemCount}} left! -->
+            
+        <button disabled="disabled" v-else>AddToCart
+
+        </button>
+        <span v-if='product.availableInventory === cartCount(product.id)'>All out!</span>
+        <span v-else-if="product.availableInventory - cartCount(product.id) < 5"> only {{itemsLeft}} left!</span>
+        <span v-else>Buy now!</span>
+        <div>
+            <span v-for='n in product.rating'>★</span>
+            <span v-for='n in 5 - product.rating'>☆</span>
+        </div>
+        </div>
+    </div>
+    
+<div v-else>
+    <h2>Checkout</h2>
+    <p>
+        <strong>First Name:</strong>
+        <input v-model.trim="order.firstname"/>
+    </p>
+    <p>
+        <strong>Last Name:</strong>
+        <input v-model.trim="order.lastname"/>
+    </p>
+    <p>
+        <strong>Address:</strong> <input v-model="order.address"/>
+    </p>
+    <p>
+        <strong>Cardnumber:</strong> 
+        <input v-model.trim="order.cardnumber"/>
+    </p>
+    <P>
+        <strong>Cvv:</strong> <input v-model="order.cvv"/>
+    </P>
+    <p>
+        <strong>Phone:</strong>
+        <input v-model.trim="order.phone"/>
+    </p>
+    <p>
+        <strong>city:</strong> <input v-model="order.city"/>
+    </p>
+    <p>
+        <strong>State:</strong>
+        <select v-model="order.state" class="form=control">
+            <option disabled value="">State</option>
+            <option v-for=" (state, key) in states" v-bind:value="state">
+            {{key}}
+        </option>
+            <!-- <option v-bind:value="states.AL">AL</option>
+            <option v-bind:value="states.AR">AR</option>
+            <option v-bind:value="states.CA">CA</option>
+            <option v-bind:value="states.NV">NV</option> -->
+        </select>
+       
+    </p>
+    <p>
+    <strong>Zip Postal Code:</strong> 
+    <input v-model.number="order.zip" type="number"/>
+    <p><input type="checkbox" id="gift" value="true" v-model="order.gift"
+
+        v-bind:true-value="order.sendgift"
+        v-bind:false-value="order.dontsendgift">
+    <label for="gift">Ship As Gift?</label></p>
+    <p><input type="radio" id="home" value="Home" v-model="order.method">
+     <label for="home">Home</label>
+     <input type="radio" id="business" value="Business" v-model="order.method">   
+    <label for="business">business</label></p>        
+</p>
+    <h2>order Information</h2>
+    <p>First Name: {{order.firstname}}</p>
+    <p>Last Name: {{order.lastname}}</p>
+    <p>CardNumber: {{order.cardnumber}}</p>
+    <p>Cvv: {{order.cvv}}</p>
+    <p>Address: {{order.address}}</p>
+    <p>Phone number: {{order.phone}}</p>
+    <p>City: {{order.city}}</p>
+    <p>Zip: {{order.zip}}</p>
+    <P>State: {{order.state}}</P>
+    <p>Gift? {{order.gift}}</p>    
+    <p>Method: {{order.method}}</p>
+    <button v-on:click="submitForm">place Order</button>
+   
+    </div>
+</div>
+    </main>
+       
+       
+    </main>
+</div>
+<script type="text/javascript">
+var webstore = new Vue({
+el: '#app', // <=== Don't forget this comma
+data: {  // the 'data' option
+// the key 'sitename' matches the value of 'v-text' earlier
+ sitename: "Umar's Site", 
+ products:products,
+ showProduct: true,
+ order: {
+    firstname: '',
+    lastname: '',
+    cardnumber: '',
+    address: '',
+    phone: '',
+    city: '',
+    zip: '',
+    state: '',
+        method: 'Home',
+        gift: false,
+        sendGift: 'Send as a gift',
+        dontsendGift: 'Do not send as a gift'
+    },
+    states: {
+        AL: 'Alabama',
+        AR: 'Arizona',
+        CA: 'California',
+        NV: 'Nevada',
+        IL: 'Chicago',
+        NY: 'Newyork',
+        VG: 'Vegas',
+        LA: 'LosAngles',
+        MI: 'Miami'
+
+    },
+    
+// product: {
+// id: 1001,
+// title: "Iphone 16 Case",
+// description: "Apple iPhone 16 Pro Clear Case with MagSafe",
+// price: 219,
+// image: "iphonecase.jpg",
+// availableInventory: 10,
+// rating: 3
+// },
+cart: [] // array to store items in shopping cart
+},
+methods:{
+    addToCart:function(product) {
+        this.cart.push(product.id);
+
+    },
+    showCheckout() {
+        this.showProduct=this.showProduct ? false : true;
+    },
+    submitForm() {alert('order submitted!')},
+    canAddToCart:function(product) {
+        return product.availableInventory>this.cartCount(product.id);
+     
+    },
+    cartCount(id) {
+        let count = 0;
+        for (let i = 0; i < this.cart.length; i++) {
+            if (this.cart[i] === id) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+},
+computed: { // the Computed Property object
+cartItemCount: function() { // the property name
+// its value is calculated when it is called
+return this.cart.length || "";
+},
+sortedproducts() {
+    let productsArray = this.products.slice(0);
+    function compare(a, b) {
+        if (a.price > b.price)
+        return 1;
+    if (a.price < b.price)
+    return -1;
+return 0;
+    }
+    return productsArray.sort(compare);
+    
+}
+,
+    
+    itemsLeft() {
+        return this.product.availableInventory - this.cartItemCount;
+    }
+
+    
+   }
+
+
+
+
+ 
+ 
+});
+ 
+</script>
+</body>
+</html>
